@@ -1,0 +1,10 @@
+version: "3.5"
+services:
+  app:
+    build: .
+    command: kawaiibot
+    environment:
+      - ENV=${ENV}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - CLIENT_ID=${CLIENT_ID}
+    restart: always
