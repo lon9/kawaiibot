@@ -80,14 +80,6 @@ func NewBot(token, clientID, env string) (*Bot, error) {
 	b.Name = "kawaiibot"
 	if env == "development" {
 		b.SetNumShards(1)
-	} else {
-		recommended, err := b.GetRecommendedCount()
-		if err != nil {
-			return nil, err
-		}
-		if recommended < 2 {
-			b.SetNumShards(5)
-		}
 	}
 	b.AddHandler(b.ready)
 	b.AddHandler(b.messageCreate)
