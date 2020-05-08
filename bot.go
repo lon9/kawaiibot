@@ -9,8 +9,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/jonas747/discordgo"
 	"github.com/jonas747/dshardmanager"
+	"github.com/lon9/topgg"
 )
 
 // SearchURL is url for searching images
@@ -68,18 +69,26 @@ type Image struct {
 // Bot is struct
 type Bot struct {
 	dshardmanager.Manager
-	clientID string
+	clientID   string
+	topggToken string
 }
 
 // NewBot is constructor
-func NewBot(token, clientID, env string) (*Bot, error) {
+func NewBot(token, clientID, env, topggToken string) (*Bot, error) {
 	b := &Bot{
-		Manager:  *dshardmanager.New("Bot " + token),
-		clientID: clientID,
+		Manager:    *dshardmanager.New("Bot " + token),
+		clientID:   clientID,
+		topggToken: topggToken,
 	}
 	b.Name = "kawaiibot"
 	if env == "development" {
 		b.SetNumShards(1)
+	} else {
+		numShards, err := b.GetRecommendedCount()
+		if err != nil {
+			return nil, err
+		}
+		b.SetNumShards(numShards)
 	}
 	b.AddHandler(b.ready)
 	b.AddHandler(b.messageCreate)
@@ -93,6 +102,7 @@ func (b *Bot) Close() error {
 
 func (b *Bot) ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateStatus(0, "!moe (q={keyword})")
+	topgg.SendStats(&b.Manager, b.topggToken)
 }
 
 func (b *Bot) messageCreate(s *discordgo.Session, event *discordgo.MessageCreate) {
@@ -103,16 +113,16 @@ func (b *Bot) messageCreate(s *discordgo.Session, event *discordgo.MessageCreate
 		return
 	}
 	if strings.HasPrefix(m, "!moe q=") {
-		b.sendEmbed(s, event.ChannelID, strings.TrimSpace(strings.Replace(m, "!moe q=", "", -1)))
+		b.sendEmbed(s, strings.TrimSpace(strings.Replace(m, "!moe q=", "", -1)), event.ChannelID)
 		return
 	}
 	if strings.HasPrefix(m, "!moe") {
-		b.sendEmbed(s, event.ChannelID, "")
+		b.sendEmbed(s, "", event.ChannelID)
 		return
 	}
 }
 
-func (b *Bot) sendEmbed(s *discordgo.Session, channelID, q string) {
+func (b *Bot) sendEmbed(s *discordgo.Session, q string, channelID int64) {
 	image, err := b.getImage(q)
 	if err != nil {
 		log.Println(err)
