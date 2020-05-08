@@ -1,6 +1,6 @@
 package main
 
-import "github.com/bwmarrin/discordgo"
+import "github.com/jonas747/discordgo"
 
 //Embed ...
 type Embed struct {

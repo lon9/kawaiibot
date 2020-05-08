@@ -7,4 +7,5 @@ services:
       - ENV=${ENV}
       - BOT_TOKEN=${BOT_TOKEN}
       - CLIENT_ID=${CLIENT_ID}
+      - TOPGG_TOKEN=${TOPGG_TOKEN}
     restart: always

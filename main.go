@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	b, err := NewBot(os.Getenv("BOT_TOKEN"), os.Getenv("CLIENT_ID"), os.Getenv("ENV"))
+	b, err := NewBot(os.Getenv("BOT_TOKEN"), os.Getenv("CLIENT_ID"), os.Getenv("ENV"), os.Getenv("TOPGG_TOKEN"))
 	if err != nil {
 		panic(err)
 	}
